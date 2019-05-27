@@ -91,7 +91,7 @@ for (n in n.values) {
   for (k in (1:iterations)) {
     index <- sample(1:nrow(train), n)
     dat_name <- paste('dat', n, k, sep = '_')
-    assign(dat_name, train[index, ])
+    assign(dat_name, train[index,])
     sampledata.names <- c(sampledata.names, dat_name)
   }
 }
@@ -297,14 +297,12 @@ lr.ridge.ml <- function(dat.name) {
   return(data.frame(Model, `Sample Size`, Data, A, B, C, Points))
 }
 
-
 # load results
 rr.result <- data.frame()
 for (i in 1:length(sampledata.names)) {
   result <- lr.ridge.ml(sampledata.names[i])
   rr.result <- rbind(rr.result, result)
 }
-
 
 #--- XG Boost
 # Parameter selection
@@ -362,7 +360,7 @@ for (n in n.values) {
   for (k in (1:iterations)) {
     index <- sample(1:nrow(train), n)
     dat_name <- paste('dat', n, k, sep = '_')
-    assign(dat_name, train[index,])
+    assign(dat_name, train[index, ])
     sampledata.names <- c(sampledata.names, dat_name)
   }
 }
@@ -383,7 +381,6 @@ xgb_params <- list(
   "num_class" = 10
 )
 nround    <- 120 # number of XGBoost rounds
-
 train_data   <- train[, -1]
 train_label  <- train[, 1]
 train_matrix <-
@@ -438,56 +435,76 @@ for (i in 1:length(sampledata.names)) {
   xgb.result  <- rbind(xgb.result , result)
 }
 
-
-# gradient boosting model 
-gbm.ml <- function(dat.name){
+# gradient boosting model
+gbm.ml <- function(dat.name) {
   dat <- get(dat.name)
-  label <- dat[,1]
+  label <- dat[, 1]
   
   
   Model = 'GBM'
   `Sample Size` = nrow(dat)
   Data = dat.name
   
-  A = round(nrow(dat)/nrow(train),4)
+  A = round(nrow(dat) / nrow(train), 4)
   
   start = Sys.time()
-  gbm.model =  gbm(label~., data = dat[-1], n.trees = 150, distribution = 'multinomial')
+  gbm.model =  gbm(
+    label ~ .,
+    data = dat[-1],
+    n.trees = 150,
+    distribution = 'multinomial'
+  )
   
   end = Sys.time()
-  B = round(min(1, as.numeric(end - start,units='secs')/60),4)
+  B = round(min(1, as.numeric(end - start, units = 'secs') / 60), 4)
   
-  predictionMatrix = predict(gbm.model, newdata = test_data, n.trees = 150,type = 'response')
+  predictionMatrix = predict(gbm.model,
+                             newdata = test_data,
+                             n.trees = 150,
+                             type = 'response')
   p.predictionMatrixT = apply(predictionMatrix, 1, which.max)
-  
-  
+
   result = p.predictionMatrixT
   
-  C = round(1 - mean(result == test_label+1),4)
+  C = round(1 - mean(result == test_label + 1), 4)
   
-  Points = round(WeightRow*A + WeightTime*B + WeightError*C,4)
+  Points = round(WeightRow * A + WeightTime * B + WeightError * C, 4)
   
-  return(data.frame(Model,`Sample Size`,Data, A,B,C,Points))
+  return(data.frame(Model, `Sample Size`, Data, A, B, C, Points))
 }
-
-
 
 gbm.result <- data.frame()
-for (i in 1:length(sampledata.names)){
+for (i in 1:length(sampledata.names)) {
   result <- gbm.ml(sampledata.names[i])
-  gbm.result  <- rbind(gbm.result ,result)
+  gbm.result  <- rbind(gbm.result , result)
 }
 
-
-# comparison 
-score <-data.table(rbind(ml.result,knn.result,ct.result,e.result,rf_result,gbm.result,svm_result,lr.result,rr.result,xgb.result))
+# comparison
+score <-
+  data.table(
+    rbind(
+      ml.result,
+      knn.result,
+      ct.result,
+      e.result,
+      rf_result,
+      gbm.result,
+      svm_result,
+      lr.result,
+      rr.result,
+      xgb.result
+    )
+  )
 model = 'Model'
 size = "Sample.Size"
-meanscore <- score[,.('A'= mean(A),
-                      'B'= mean(B),
-                      'C'= mean(C),
-                      'Points'=mean(Points)),by=c(model,size)]
-score <- score[,lapply(X=.SD, FUN = 'round.numerics',digits=4)]
-meanscore <- meanscore[,lapply(X=.SD, FUN = 'round.numerics',digits=4)]
-datatable(score[order(Points),])
+meanscore <- score[, .(
+  'A' = mean(A),
+  'B' = mean(B),
+  'C' = mean(C),
+  'Points' = mean(Points)
+), by = c(model, size)]
+score <- score[, lapply(X = .SD, FUN = 'round.numerics', digits = 4)]
+meanscore <-
+  meanscore[, lapply(X = .SD, FUN = 'round.numerics', digits = 4)]
+datatable(score[order(Points), ])
 datatable(meanscore[order(Points)])
