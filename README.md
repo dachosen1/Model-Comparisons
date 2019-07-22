@@ -1,7 +1,5 @@
 # Model-Comparisons
 
-
-## A Practical Machine Learning Challenge
 What are the best machine learning models for classifying the labels of the testing set based upon the data of the training set? How small of a sample size do you need to generate the “best” predictions? How long does the computer need to run to obtain good results? To balance these competing goals, we will introduce an overall scoring function for the quality of a classification.
 
 ```
