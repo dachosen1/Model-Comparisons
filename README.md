@@ -1,28 +1,12 @@
 # Model-Comparisons
 
 
-## The Data
-The MNIST Fashion database (https://github.com/zalandoresearch/fashion-mnist) collected a large number of images for different types of apparel. Each image is divided into small squares called pixels of equal area. Within each pixel, a brightness measurement was recorded in grayscale. The brightness values range from 0 (white) to 255 (black). The original data set divided each image into 784 (28 by 28) pixels. 
-
-To facilitate more tractable computations, we have condensed these data into 49 pixels (7 by 7) per image.
-
-For each picture, the first 7 pixels represent the top row, the next 7 pixels form the second row, etc.
-
-The assignment provides the following files:
-
-Training Set: MNIST-fashion training set-49.csv. This file contains 60,000 rows of data.
-Testing Set: MNIST-fashion testing set-49.csv. This file contains 10,000 rows of data.
-Each file includes the following columns:
-
-label: This provides the type of fashionable product shown in the image.
-
-pixel1, pixel2, …, pixel49: These columns provide the grayscale measurement for the 49 pixels of the image.
-
 ## A Practical Machine Learning Challenge
 What are the best machine learning models for classifying the labels of the testing set based upon the data of the training set? How small of a sample size do you need to generate the “best” predictions? How long does the computer need to run to obtain good results? To balance these competing goals, we will introduce an overall scoring function for the quality of a classification.
 
+```
 Points = 0.25 * A + 0.25 * B + 0.5 * C
-
+```
 where
 
 A is the proportion of the training rows that is utilized in the model. For instance, if you use 30,000 of the 60,000 rows, then A = 30,000 / 60,000 = 0.5;
